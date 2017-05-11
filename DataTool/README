@@ -12,7 +12,7 @@ This software can be installed in two different ways:
 
 2) Partial installation. Use this if you do NOT need to generate decay rate databases, and only need the installation for running the hbar_gshfs simulation.
 
-There is a setup script, setup.sh, that will guide you through the setup process. In order to successfully install this software, you need to have ROOT installed and configured. If you are going to use the full installation (option 1 above) you also need a fortran77 compiler installed (NOT gfortran). If these prerequisities are fullfilled, the rest should be taken care of by the setup script. The script will basically do the following (interactively):
+There is a setup script, setup.sh, that will guide you through the setup process. In order to successfully install this software, you need to have ROOT installed and configured. If you are going to use the full installation (option 1 above) you also need a fortran77 compiler installed (NOT gfortran [Markus: still don't know why]). If these prerequisities are fullfilled, the rest should be taken care of by the setup script. The script will basically do the following (interactively):
 1) Modify the makefile either to link to the cfac-1.4.1 software or delete these references.
 2) Link hbar_gshfs to the software.
 
