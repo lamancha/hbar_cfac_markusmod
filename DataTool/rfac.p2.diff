@@ -1,0 +1,237 @@
+diff -r -U 5 orig//cfac-1.4.1/config.c mod//cfac-1.4.1/faclib/config.c
+--- orig//cfac-1.4.1/faclib/config.c	2013-06-21 17:24:47.505817344 +0200
++++ mod//cfac-1.4.1/faclib/config.c	2013-08-04 15:45:05.486159884 +0200
+@@ -24,11 +24,11 @@
+ ** TYPE:        string.
+ ** PURPOSE:     a string orbital angular momentum symbols.
+ ** NOTE:        the last char "*" is not part of the symbol, 
+ **              rather, it represents any of the previous symbols.
+ */
+-static char spec_symbols[MAX_SPEC_SYMBOLS+2] = "spdfghiklmnoqrtuvwxyz*"; 
++static char spec_symbols[MAX_SPEC_SYMBOLS+2] = "spdfghiklmnoqrtuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ*"; 
+ 
+ /* 
+ ** FUNCTION:    DistributeElectronsShell
+ ** PURPOSE:     distribute nq electrons among the specified shells
+ **              to construct all possible configurations.
+diff -r -U 5 orig//cfac-1.4.1/faclib/consts.h mod//cfac-1.4.1/faclib/consts.h
+--- orig//cfac-1.4.1/faclib/consts.h	2013-06-21 17:24:47.505817344 +0200
++++ mod//cfac-1.4.1/faclib/consts.h	2013-08-04 15:44:55.666111094 +0200
+@@ -144,11 +144,11 @@
+ #define ENERELERR  1E-5  /* relative energy error */
+ #define ENEABSERR  1E-8  /* absolute energy error */
+ 
+ /* config */
+ #define MCHSHELL           2048
+-#define MAX_SPEC_SYMBOLS   21
++#define MAX_SPEC_SYMBOLS   47
+ #define LEVEL_NAME_LEN     128
+ #define GROUP_NAME_LEN     64
+ #define MAX_GROUPS         600
+ #define MAX_SYMMETRIES     256
+ #define CONFIGS_BLOCK      1024
+diff -r -U 5 orig//cfac-1.4.1/faclib/dbase.c mod//cfac-1.4.1/faclib/dbase.c
+--- orig//cfac-1.4.1/faclib/dbase.c	2013-06-21 17:24:47.505817344 +0200
++++ mod//cfac-1.4.1/faclib/dbase.c	2013-07-29 12:23:57.379710639 +0200
+@@ -1,9 +1,10 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
+ #include <math.h>
++#include <stdio.h>
+ 
+ #include "cfacP.h"
+ #include "consts.h"
+ #include "dbase.h"
+ #include "structure.h"
+@@ -101,13 +102,13 @@
+ 	if (n != 2) continue;
+ 	i++;
+       }
+       fseek(f, 0, SEEK_SET);
+       bform.nk = i;
+-      bform.k = malloc(sizeof(double)*bform.nk);
+-      bform.logk = malloc(sizeof(double)*bform.nk);
+-      bform.fk = malloc(sizeof(double)*bform.nk);
++      bform.k = (double*)malloc(sizeof(double)*bform.nk);
++      bform.logk = (double*)malloc(sizeof(double)*bform.nk);
++      bform.fk = (double*)malloc(sizeof(double)*bform.nk);
+       i = 0;
+       while (1) {
+ 	if (NULL == fgets(buf, 1024, f)) break;
+ 	n = sscanf(buf, "%lf %lf\n", &dk, &df);
+ 	if (n != 2) continue;
+@@ -539,11 +540,11 @@
+   RSF0(fh->ssversion);
+   RSF0(fh->type);
+   RSF0(fh->atom);
+   RSF1(fh->symbol, sizeof(char), 4);
+   RSF0(fh->nblocks);
+-  
++
+   *swp = 0;
+ 
+   if (CheckEndian(fh) != (int) (fheader[0].symbol[3])) {
+     *swp = 1;
+     SwapEndianFHeader(fh);
+@@ -1943,10 +1944,11 @@
+     break;
+   }
+   return 0;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int PrintTable(char *ifn, char *ofn, int v) {
+   F_HEADER fh;
+   FILE *f1, *f2;
+   int n, swp;
+ 
+@@ -2031,10 +2033,12 @@
+   else fflush(f2);
+ 
+   return n;
+ }
+ 
++#endif
++
+ int FreeMemENTable(void) {
+   if (mem_en_table) free(mem_en_table);
+   mem_en_table = NULL;
+   mem_en_table_size = 0;
+   return 0;
+@@ -2232,10 +2236,11 @@
+ int IBaseFromENRecord(EN_RECORD *r) {
+   if (r->j < 0) return -1;
+   else return r->ibase;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int MemENTable(char *fn) {
+   F_HEADER fh;  
+   EN_HEADER h;
+   EN_RECORD r;
+   FILE *f;
+@@ -2312,10 +2317,13 @@
+ 
+   fclose(f);
+   return 0;
+ }    
+ 
++#endif
++
++#ifndef ExcludeInternalDependencies
+ int MemENFTable(char *fn) {
+   F_HEADER fh;  
+   ENF_HEADER h;
+   ENF_RECORD r;
+   FILE *f;
+@@ -2371,10 +2379,11 @@
+ 
+   fclose(f);
+ 
+   return 0;
+ }    
++#endif
+ 
+ int PrintENTable(FILE *f1, FILE *f2, int v, int swp) {
+   EN_HEADER h;
+   EN_RECORD r;
+   int n, i;
+@@ -2414,10 +2423,11 @@
+   }
+   
+   return nb;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int PrintENFTable(FILE *f1, FILE *f2, int v, int swp) {
+   ENF_HEADER h;
+   ENF_RECORD r;
+   int n, i;
+   int nb, ilev, mlev;
+@@ -2448,10 +2458,11 @@
+     nb++;
+   }
+ 
+   return nb;
+ }
++#endif
+     
+ double OscillatorStrength(int m, double e, double s, double *ga) {
+   int m2;
+   double aw, x;
+ 
+@@ -2547,10 +2558,13 @@
+ 	  ta += a;
+ 	  fprintf(f2, "%6d %6d %3d %6d %6d %3d %2d %13.6E %13.6E %13.6E %13.6E %13.6E\n",
+ 		  r.upper, mem_enf_table[r.upper].p, mem_enf_table[r.upper].j,
+ 		  r.lower, mem_enf_table[r.lower].p, mem_enf_table[r.lower].j,
+ 		  j-abs(h.multipole),(e*HARTREE_EV), gf, a, r.strength[j], ta);
++	  ///RLMOD
++	  printf("MPOLE: %6d EDIFF: %13.6E STR: %13.6E A: %13.6E\n", h.multipole, e, (double)(r.strength[j]), a);
++	  //END RLMOD
+ 	}
+       } else {
+ 	for (j = 0; j < nq; j++) {
+ 	  fprintf(f2, "%6d %6d %13.6E\n", 
+ 		  r.upper, r.lower, r.strength[j]);
+@@ -3414,10 +3428,11 @@
+   fclose(f);
+   
+   return 0;
+ }
+   
++#ifndef ExcludeInternalDependencies
+ int JoinTable(char *fn1, char *fn2, char *fn) {
+   F_HEADER fh1, fh2;
+   FILE *f1, *f2, *f;
+   int n, swp1, swp2;
+ #define NBUF 8192
+@@ -3484,10 +3499,11 @@
+   fclose(f);
+   
+   return 0;
+ #undef NBUF
+ }
++#endif
+ 
+ int ISearch(int i, int n, int *ia) {
+   int k;
+ 
+   for (k = 0; k < n; k++) {
+@@ -3497,10 +3513,11 @@
+   }
+ 
+   return -1;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int StoreTable(const cfac_t *cfac,
+     sqlite3 *db, unsigned long int sid, const char *ifn)
+ {
+     F_HEADER fh;
+     FILE *fp;
+@@ -3543,5 +3560,7 @@
+ 
+     fclose(fp);
+     
+     return retval;
+ }
++
++#endif
+diff -r -U 5 cfac-1.4.1/faclib_back/parser.c cfac-1.4.1/faclib/parser.c
+--- orig//cfac-1.4.1/faclib/parser.c	2013-06-21 17:24:47.505817344 +0200
++++ mod//cfac-1.4.1/faclib/parser.c	2013-08-04 16:55:57.679246272 +0200
+@@ -15,11 +15,11 @@
+ #define IN_WHITE 0
+ #define IN_TOKEN 1
+ #define IN_QUOTE 2
+ #define IN_OZONE 3
+ 
+-#define NN 32
++#define NN 64
+ 
+ static int state;
+ static int tokpos;
+ static char white[NN] = " \t";
+ static char delim[NN] = ",";

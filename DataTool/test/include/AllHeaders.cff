@@ -1,0 +1,6 @@
+#include "CGTranslatorTest.hh"
+#include "QuantumNumberTest.hh"
+#include "rfacDecayableObjectTest.hh"
+#include "rfacFieldRegimeTranslatorTest.hh"
+#include "rfacLinearInterpolationTest.hh"
+#include "StrongFieldQuantumNumberTest.hh"

@@ -1,0 +1,151 @@
+diff -r -U 5 orig//cfac-1.4.1/faclib/dbase.c mod//cfac-1.4.1/faclib/dbase.c
+--- orig//cfac-1.4.1/faclib/dbase.c	2013-06-21 17:24:47.505817344 +0200
++++ mod//cfac-1.4.1/faclib/dbase.c	2013-06-21 19:55:04.094528193 +0200
+@@ -101,13 +101,13 @@
+ 	if (n != 2) continue;
+ 	i++;
+       }
+       fseek(f, 0, SEEK_SET);
+       bform.nk = i;
+-      bform.k = malloc(sizeof(double)*bform.nk);
+-      bform.logk = malloc(sizeof(double)*bform.nk);
+-      bform.fk = malloc(sizeof(double)*bform.nk);
++      bform.k = (double*)malloc(sizeof(double)*bform.nk);
++      bform.logk = (double*)malloc(sizeof(double)*bform.nk);
++      bform.fk = (double*)malloc(sizeof(double)*bform.nk);
+       i = 0;
+       while (1) {
+ 	if (NULL == fgets(buf, 1024, f)) break;
+ 	n = sscanf(buf, "%lf %lf\n", &dk, &df);
+ 	if (n != 2) continue;
+@@ -1943,10 +1943,11 @@
+     break;
+   }
+   return 0;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int PrintTable(char *ifn, char *ofn, int v) {
+   F_HEADER fh;
+   FILE *f1, *f2;
+   int n, swp;
+ 
+@@ -2031,10 +2032,12 @@
+   else fflush(f2);
+ 
+   return n;
+ }
+ 
++#endif
++
+ int FreeMemENTable(void) {
+   if (mem_en_table) free(mem_en_table);
+   mem_en_table = NULL;
+   mem_en_table_size = 0;
+   return 0;
+@@ -2232,10 +2235,11 @@
+ int IBaseFromENRecord(EN_RECORD *r) {
+   if (r->j < 0) return -1;
+   else return r->ibase;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int MemENTable(char *fn) {
+   F_HEADER fh;  
+   EN_HEADER h;
+   EN_RECORD r;
+   FILE *f;
+@@ -2312,10 +2316,13 @@
+ 
+   fclose(f);
+   return 0;
+ }    
+ 
++#endif
++
++#ifndef ExcludeInternalDependencies
+ int MemENFTable(char *fn) {
+   F_HEADER fh;  
+   ENF_HEADER h;
+   ENF_RECORD r;
+   FILE *f;
+@@ -2371,10 +2378,11 @@
+ 
+   fclose(f);
+ 
+   return 0;
+ }    
++#endif
+ 
+ int PrintENTable(FILE *f1, FILE *f2, int v, int swp) {
+   EN_HEADER h;
+   EN_RECORD r;
+   int n, i;
+@@ -2414,10 +2422,11 @@
+   }
+   
+   return nb;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int PrintENFTable(FILE *f1, FILE *f2, int v, int swp) {
+   ENF_HEADER h;
+   ENF_RECORD r;
+   int n, i;
+   int nb, ilev, mlev;
+@@ -2448,10 +2457,11 @@
+     nb++;
+   }
+ 
+   return nb;
+ }
++#endif
+     
+ double OscillatorStrength(int m, double e, double s, double *ga) {
+   int m2;
+   double aw, x;
+ 
+@@ -3414,10 +3424,11 @@
+   fclose(f);
+   
+   return 0;
+ }
+   
++#ifndef ExcludeInternalDependencies
+ int JoinTable(char *fn1, char *fn2, char *fn) {
+   F_HEADER fh1, fh2;
+   FILE *f1, *f2, *f;
+   int n, swp1, swp2;
+ #define NBUF 8192
+@@ -3484,10 +3495,11 @@
+   fclose(f);
+   
+   return 0;
+ #undef NBUF
+ }
++#endif
+ 
+ int ISearch(int i, int n, int *ia) {
+   int k;
+ 
+   for (k = 0; k < n; k++) {
+@@ -3497,10 +3509,11 @@
+   }
+ 
+   return -1;
+ }
+ 
++#ifndef ExcludeInternalDependencies
+ int StoreTable(const cfac_t *cfac,
+     sqlite3 *db, unsigned long int sid, const char *ifn)
+ {
+     F_HEADER fh;
+     FILE *fp;
+@@ -3543,5 +3556,7 @@
+ 
+     fclose(fp);
+     
+     return retval;
+ }
++
++#endif
